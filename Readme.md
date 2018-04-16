@@ -98,3 +98,7 @@ See full example at `examples/redis_example.go`
 String maps aren't the cheapest option when using redis in this way but it was the tidiest to implement. A slice of paired key, value strings are closer to what's actually used by redis on the wire and should be a little more efficient on time and space.
 
 In either case, the map representation is still useful.
+
+# etc
+
+- Why not use the redis json module? I needed this to work on a very plain and little bit out of date redis server instance.
