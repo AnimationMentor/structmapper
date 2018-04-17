@@ -46,8 +46,8 @@ func StringMapToStruct(m map[string]string, s interface{}, strict bool) error {
 				continue
 			}
 
-			t, _ := getJSONTag(f.Name, f.Tag.Get("json"))
-			if t == "" {
+			t, _, omit := getJSONTagFromField(f)
+			if omit {
 				continue
 			}
 			if value, exists := m[t]; exists {

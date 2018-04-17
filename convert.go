@@ -1,30 +1,43 @@
 package structmapper
 
 import (
+	"reflect"
 	"strconv"
 	"strings"
 )
 
-// getJSONTag takes a field name and json struct tag value and returns the effective name and omitempty setting.
-// If the json tag is a "-" then the empty string is returned.
+// getJSONTag takes a field name and json struct tag value and returns the effective name, omitempty setting
+// and an indicator if the field value should be ommitted (if the tag value is "-").
+//
+//    name, omitEmpty, omit := getJSONTag(fieldName, fieldTag)
 //
 // Examples:
 //    getJSONTag("Cake", "tuna,omitempty") -> "tuna",true
 //    getJSONTag("Cake", "") -> "Cake",false
 //
-func getJSONTag(fieldName, tag string) (string, bool) {
+func getJSONTag(fieldName, tag string) (string, bool, bool) {
 	if tag == "-" {
-		return "", false
+		return "", false, true
 	}
 	if tag == "-," { // per the docs, this is how you get a json field name of "-"
-		return "-", false
+		return "-", false, false
 	}
 	f := strings.Split(tag, ",")
 	omitEmpty := len(f) > 1 && f[1] == "omitempty"
 	if len(f) < 1 || f[0] == "" {
-		return fieldName, omitEmpty
+		return fieldName, omitEmpty, false
 	}
-	return f[0], omitEmpty
+	return f[0], omitEmpty, false
+}
+
+// getJSONTagFromField gathers tag and name from a field and passes it to getJSONTag.
+// If an "sm" tag is present, it is used in favor of the "json" field tag.
+func getJSONTagFromField(f reflect.StructField) (string, bool, bool) {
+	t := f.Tag.Get("sm")
+	if t == "" {
+		t = f.Tag.Get("json")
+	}
+	return getJSONTag(f.Name, t)
 }
 
 // stringToBool returns true if the value is true looking

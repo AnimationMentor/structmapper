@@ -36,8 +36,8 @@ func StructToStringMap(s interface{}) (map[string]string, error) {
 				continue
 			}
 
-			t, omitEmpty := getJSONTag(ft.Name, ft.Tag.Get("json"))
-			if t == "" || omitEmpty && f.Len() == 0 {
+			t, omitEmpty, omit := getJSONTagFromField(ft)
+			if omit || omitEmpty && f.Len() == 0 {
 				continue
 			}
 
