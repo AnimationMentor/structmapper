@@ -27,39 +27,57 @@ func StringMapToStruct(m map[string]string, s interface{}, strict bool) error {
 	// or a json decoded value
 	m2 := make(map[string]interface{}, len(m))
 
-	sv := reflect.ValueOf(s).Elem()
-	st := sv.Type()
+	var walkValue func(reflect.Value) error
 
-	// Iterate over the struct looking for matches in the string map.
-	for i := 0; i < st.NumField(); i++ {
-		f := st.Field(i)
-		t, _ := getJSONTag(f.Name, f.Tag.Get("json"))
-		if t == "" {
-			continue
-		}
-		if value, exists := m[t]; exists {
-			if f.Type.Kind() == reflect.String {
-				m2[t] = value
-			} else if f.Type.Kind() == reflect.Bool {
-				m2[t] = stringToBool(value)
-			} else if value != "" {
-				var decodedValue interface{}
-				err := json.Unmarshal([]byte(value), &decodedValue)
-				if err == nil {
-					m2[t] = decodedValue
-				} else if !strict {
-					if f.Type == reflect.SliceOf(reflect.TypeOf("")) {
-						m2[t] = stringToStringSlice(value)
-						err = nil
-					}
-				}
+	// Iterate over the given struct and collect values into the map.
+	// Anonymous fields cause a recursive call to walkValue().
+	walkValue = func(sv reflect.Value) error {
 
-				if err != nil {
+		st := sv.Type()
+
+		// Iterate over the struct looking for matches in the string map.
+		for i := 0; i < st.NumField(); i++ {
+			f := st.Field(i)
+
+			if f.Anonymous {
+				if err := walkValue(sv.Field(i)); err != nil {
 					return err
 				}
+				continue
+			}
 
+			t, _ := getJSONTag(f.Name, f.Tag.Get("json"))
+			if t == "" {
+				continue
+			}
+			if value, exists := m[t]; exists {
+				if f.Type.Kind() == reflect.String {
+					m2[t] = value
+				} else if f.Type.Kind() == reflect.Bool {
+					m2[t] = stringToBool(value)
+				} else if value != "" {
+					var decodedValue interface{}
+					err := json.Unmarshal([]byte(value), &decodedValue)
+					if err == nil {
+						m2[t] = decodedValue
+					} else if !strict {
+						if f.Type == reflect.SliceOf(reflect.TypeOf("")) {
+							m2[t] = stringToStringSlice(value)
+							err = nil
+						}
+					}
+
+					if err != nil {
+						return err
+					}
+
+				}
 			}
 		}
+		return nil
+	}
+	if err := walkValue(reflect.ValueOf(s).Elem()); err != nil {
+		return err
 	}
 
 	// we now json encode m2 to make it a form which looks more like s

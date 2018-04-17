@@ -317,3 +317,52 @@ func Test_stringToBool(t *testing.T) {
 	}
 
 }
+
+func Test_AnonymousFields(t *testing.T) {
+
+	type T2 struct {
+		F21 int      `json:"f21"`
+		F22 []string `json:"f22"`
+	}
+
+	type T1 struct {
+		T2
+		F11 int      `json:"f11"`
+		F12 []string `json:"f12"`
+	}
+
+	t1 := T1{
+		F11: 11,
+		F12: []string{"f12"},
+	}
+	t1.F21 = 21
+	t1.F22 = []string{"f22"}
+
+	m, err := StructToStringMap(&t1)
+
+	expected := map[string]string{
+		"f11": "11",
+		"f12": "[\"f12\"]",
+		"f21": "21",
+		"f22": "[\"f22\"]",
+	}
+
+	if err != nil {
+		t.Errorf("StructToStringMap - unexpected error: %v", err)
+		return
+	} else if !reflect.DeepEqual(m, expected) {
+		t.Errorf("StructToStringMap - expected %#v got %#v", expected, m)
+		return
+	}
+
+	t2 := T1{}
+	err = StringMapToStruct(m, &t2, true)
+
+	if err != nil {
+		t.Errorf("StringMapToStruct - unexpected error: %v", err)
+		return
+	} else if !reflect.DeepEqual(t1, t2) {
+		t.Errorf("StringMapToStruct - expected %#v got %#v", t1, t2)
+		return
+	}
+}
