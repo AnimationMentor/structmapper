@@ -3,6 +3,7 @@ package structmapper
 import (
 	"encoding/json"
 	"reflect"
+	"time"
 
 	"github.com/pkg/errors"
 )
@@ -51,8 +52,22 @@ func StringMapToStruct(m map[string]string, s interface{}, strict bool) error {
 				continue
 			}
 			if value, exists := m[t]; exists {
+
+				// a := f.Type.Kind() == reflect.Struct
+				// b:= sv.Field(i).Interface()
+
+				_, isT := isTime(sv.Field(i))
+
 				if f.Type.Kind() == reflect.String {
 					m2[t] = value
+				} else if isT {
+					if value != "" {
+						tval, err := time.Parse(time.RFC3339, value)
+						if err != nil {
+							return errors.Wrap(err, "parsing time value")
+						}
+						m2[t] = tval
+					}
 				} else if f.Type.Kind() == reflect.Bool {
 					m2[t] = stringToBool(value)
 				} else if value != "" {
