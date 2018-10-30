@@ -3,6 +3,7 @@ package structmapper
 import (
 	"encoding/json"
 	"reflect"
+	"time"
 
 	"github.com/pkg/errors"
 )
@@ -37,22 +38,60 @@ func StructToStringMap(s interface{}) (map[string]string, error) {
 			}
 
 			t, omitEmpty, omit := getJSONTagFromField(ft)
-			if omit || omitEmpty && f.Len() == 0 {
+
+			if omit {
 				continue
 			}
 
-			if f.Kind() == reflect.String {
-				m[t] = f.String()
+			if omitEmpty && f.Kind() == reflect.Ptr && f.IsNil() {
+				continue
+			}
+
+			var stringValue string
+
+			if timeString, isT := isTime(f); isT {
+				stringValue = timeString
+			} else if f.Kind() == reflect.String {
+				stringValue = f.String()
 			} else {
 				buf, err := json.Marshal(f.Interface())
 				if err != nil {
 					return err
 				}
-				m[t] = string(buf)
+				stringValue = string(buf)
 			}
+
+			if stringValue == "" && omitEmpty {
+				continue
+			}
+			m[t] = stringValue
+
 		}
 		return nil
 	}
 
 	return m, walkValue(reflect.ValueOf(s).Elem())
+}
+
+// isTime returns true and the string value if this is a time.Time or *time.Time
+// If it's a nil pointer or a zero value time, returns an empty string.
+func isTime(f reflect.Value) (string, bool) {
+	if f.Kind() == reflect.Struct {
+		if t, ok := f.Interface().(time.Time); ok {
+			if t.IsZero() {
+				return "", true
+			} else {
+				return t.Format(time.RFC3339), true
+			}
+		}
+	} else if f.Kind() == reflect.Ptr {
+		if t, ok := f.Interface().(*time.Time); ok {
+			if t == nil {
+				return "", true
+			} else {
+				return t.Format(time.RFC3339), true
+			}
+		}
+	}
+	return "", false
 }
