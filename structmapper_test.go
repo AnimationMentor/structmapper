@@ -58,14 +58,20 @@ func Test_BadInputsToStringMapToStruct(t *testing.T) {
 }
 
 type testStruct struct {
-	Tuna        string   `json:"tuna"`
-	Songs       []string `json:"songs"`
-	FavNumber   int      `json:"favnum"`
-	Temperature float64  `json:"temp"`
-	LikeCandy   bool     `json:"candy"`
-	Quiet       string   `json:"quiet,omitempty"`
-	Skip        string   `json:"-"`
-	NoTag       string
+	Tuna             string   `json:"tuna"`
+	Songs            []string `json:"songs"`
+	FavNumber        int      `json:"favnum"`
+	Temperature      float64  `json:"temp"`
+	LikeCandy        bool     `json:"candy"`
+	Quiet            string   `json:"quiet,omitempty"`
+	Skip             string   `json:"-"`
+	NoTag            string
+	unexportedString string
+	unexportedPtr    *testStruct2
+}
+
+type testStruct2 struct {
+	cake string
 }
 
 func Test_StructToStringMap(t *testing.T) {
@@ -84,12 +90,12 @@ func Test_StructToStringMap(t *testing.T) {
 		},
 		{
 			false,
-			&testStruct{"hello", []string{"hi", "nice"}, 2, 20.5, true, "", "", ""},
+			&testStruct{"hello", []string{"hi", "nice"}, 2, 20.5, true, "", "", "", "", nil},
 			map[string]string{"tuna": "hello", "songs": "[\"hi\",\"nice\"]", "favnum": "2", "temp": "20.5", "candy": "true", "NoTag": ""},
 		},
 		{
 			false,
-			&testStruct{"hello", []string{"hi", "nice"}, 2, 20.5, true, "A", "", ""},
+			&testStruct{"hello", []string{"hi", "nice"}, 2, 20.5, true, "A", "", "", "", nil},
 			map[string]string{"tuna": "hello", "songs": "[\"hi\",\"nice\"]", "favnum": "2", "temp": "20.5", "candy": "true", "quiet": "A", "NoTag": ""},
 		},
 		{
@@ -134,7 +140,7 @@ func Test_StringMapToStruct(t *testing.T) {
 		{
 			false,
 			map[string]string{"tuna": "hello", "songs": "[\"hi\",\"nice\"]", "favnum": "2", "temp": "20.5", "candy": "true", "NoTag": ""},
-			&testStruct{"hello", []string{"hi", "nice"}, 2, 20.5, true, "", "", ""},
+			&testStruct{"hello", []string{"hi", "nice"}, 2, 20.5, true, "", "", "", "", nil},
 		},
 		{
 			false,
@@ -150,17 +156,17 @@ func Test_StringMapToStruct(t *testing.T) {
 		{
 			false,
 			map[string]string{"tuna": "hello", "songs": "[]", "favnum": "2", "temp": "20.5", "candy": "true", "NoTag": ""},
-			&testStruct{"hello", []string{}, 2, 20.5, true, "", "", ""},
+			&testStruct{"hello", []string{}, 2, 20.5, true, "", "", "", "", nil},
 		},
 		{
 			false,
 			map[string]string{"tuna": "hello", "songs": "", "favnum": "2", "temp": "20.5", "candy": "true", "NoTag": ""},
-			&testStruct{"hello", nil, 2, 20.5, true, "", "", ""},
+			&testStruct{"hello", nil, 2, 20.5, true, "", "", "", "", nil},
 		},
 		{
 			false,
 			map[string]string{"tuna": "hello", "favnum": "2", "temp": "20.5", "candy": "true", "NoTag": ""},
-			&testStruct{"hello", nil, 2, 20.5, true, "", "", ""},
+			&testStruct{"hello", nil, 2, 20.5, true, "", "", "", "", nil},
 		},
 		{
 			false,
@@ -275,7 +281,7 @@ func Test_getJSONTag(t *testing.T) {
 	} {
 		i++ // prints prettier
 
-		gotTag, gotOmitEmpty := getJSONTag(v.inName, v.inTag)
+		gotTag, gotOmitEmpty, _ := getJSONTag(v.inName, v.inTag)
 
 		if gotTag != v.expectedTag || gotOmitEmpty != v.expectedOmitEmpty {
 			t.Errorf("test %d: expected (%q,%t) got (%q,%t)", i, v.expectedTag, v.expectedOmitEmpty, gotTag, gotOmitEmpty)

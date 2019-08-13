@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"reflect"
 	"time"
+	// "unicode"
 
 	"github.com/pkg/errors"
 )
@@ -39,6 +40,11 @@ func StringMapToStruct(m map[string]string, s interface{}, strict bool) error {
 		// Iterate over the struct looking for matches in the string map.
 		for i := 0; i < st.NumField(); i++ {
 			f := st.Field(i)
+			ft := st.Field(i)
+
+			if ft.PkgPath != "" { // unexported
+				continue
+			}
 
 			if f.Anonymous {
 				if err := walkValue(sv.Field(i)); err != nil {

@@ -30,6 +30,10 @@ func StructToStringMap(s interface{}) (map[string]string, error) {
 			f := sv.Field(i)
 			ft := st.Field(i)
 
+			if ft.PkgPath != "" { // unexported
+				continue
+			}
+
 			if ft.Anonymous {
 				if err := walkValue(f); err != nil {
 					return err
