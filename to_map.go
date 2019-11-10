@@ -84,17 +84,15 @@ func isTime(f reflect.Value) (string, bool) {
 		if t, ok := f.Interface().(time.Time); ok {
 			if t.IsZero() {
 				return "", true
-			} else {
-				return t.Format(time.RFC3339), true
 			}
+			return t.Format(time.RFC3339), true
 		}
 	} else if f.Kind() == reflect.Ptr {
 		if t, ok := f.Interface().(*time.Time); ok {
 			if t == nil {
 				return "", true
-			} else {
-				return t.Format(time.RFC3339), true
 			}
+			return t.Format(time.RFC3339), true
 		}
 	}
 	return "", false
