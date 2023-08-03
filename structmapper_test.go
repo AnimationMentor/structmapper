@@ -1,18 +1,20 @@
-package structmapper
+package structmapper_test
 
 import (
 	"reflect"
 	"testing"
+
+	"github.com/AnimationMentor/structmapper"
 )
 
 func Test_BadInputsToStructToStringMap(t *testing.T) {
 	a := "a"
-	_, err := StructToStringMap(a)
+	_, err := structmapper.StructToStringMap(a)
 	if err == nil {
 		t.Errorf("passing string value to StructToStringMap should return an error")
 	}
 
-	_, err = StructToStringMap(&a)
+	_, err = structmapper.StructToStringMap(&a)
 	if err == nil {
 		t.Errorf("passing string pointer to StructToStringMap should return an error")
 	}
@@ -20,7 +22,7 @@ func Test_BadInputsToStructToStringMap(t *testing.T) {
 	type testing struct{}
 
 	var b *testing
-	_, err = StructToStringMap(b)
+	_, err = structmapper.StructToStringMap(b)
 	if err == nil {
 		t.Errorf("passing nil struct pointer to StructToStringMap should return an error")
 	}
@@ -31,12 +33,12 @@ func Test_BadInputsToStringMapToStruct(t *testing.T) {
 	m := map[string]string{}
 
 	a := "a"
-	err := StringMapToStruct(m, a, true)
+	err := structmapper.StringMapToStruct(m, a, true)
 	if err == nil {
 		t.Errorf("passing string value to StringMapToStruct should return an error")
 	}
 
-	err = StringMapToStruct(m, &a, true)
+	err = structmapper.StringMapToStruct(m, &a, true)
 	if err == nil {
 		t.Errorf("passing string pointer to StringMapToStruct should return an error")
 	}
@@ -44,14 +46,14 @@ func Test_BadInputsToStringMapToStruct(t *testing.T) {
 	type testing struct{}
 
 	var b *testing
-	err = StringMapToStruct(m, b, true)
+	err = structmapper.StringMapToStruct(m, b, true)
 	if err == nil {
 		t.Errorf("passing nil struct pointer to StringMapToStruct should return an error")
 	}
 
 	b = &testing{}
 	m = nil
-	err = StringMapToStruct(m, b, true)
+	err = structmapper.StringMapToStruct(m, b, true)
 	if err == nil {
 		t.Errorf("passing nil map to StringMapToStruct should return an error")
 	}
@@ -106,7 +108,7 @@ func Test_StructToStringMap(t *testing.T) {
 	} {
 		i++ // prints prettier
 
-		m, err := StructToStringMap(v.input)
+		m, err := structmapper.StructToStringMap(v.input)
 		if err != nil {
 			if !v.expectedToError {
 				t.Errorf("test %d: got unexpected error - %v", i, err)
@@ -178,7 +180,7 @@ func Test_StringMapToStruct(t *testing.T) {
 
 		s := &testStruct{}
 
-		err := StringMapToStruct(v.inputMap, s, true)
+		err := structmapper.StringMapToStruct(v.inputMap, s, true)
 		if err != nil {
 			if !v.expectedToError {
 				t.Errorf("test %d: got unexpected error - %v", i, err)
@@ -243,7 +245,7 @@ func Test_NonStrictStringMapToStruct(t *testing.T) {
 
 		s := &testStruct{}
 
-		err := StringMapToStruct(v.inputMap, s, false)
+		err := structmapper.StringMapToStruct(v.inputMap, s, false)
 		if err != nil {
 			if !v.expectedToError {
 				t.Errorf("test %d: got unexpected error - %v", i, err)
@@ -281,7 +283,7 @@ func Test_getJSONTag(t *testing.T) {
 	} {
 		i++ // prints prettier
 
-		gotTag, gotOmitEmpty, _ := getJSONTag(v.inName, v.inTag)
+		gotTag, gotOmitEmpty, _ := structmapper.GetJSONTag(v.inName, v.inTag)
 
 		if gotTag != v.expectedTag || gotOmitEmpty != v.expectedOmitEmpty {
 			t.Errorf("test %d: expected (%q,%t) got (%q,%t)", i, v.expectedTag, v.expectedOmitEmpty, gotTag, gotOmitEmpty)
@@ -314,7 +316,7 @@ func Test_stringToBool(t *testing.T) {
 	} {
 		i++ // prints prettier
 
-		got := stringToBool(v.in)
+		got := structmapper.StringToBool(v.in)
 
 		if got != v.expected {
 			t.Errorf("test %d: expected %t got %t for %q", i, v.expected, got, v.in)
@@ -344,7 +346,7 @@ func Test_AnonymousFields(t *testing.T) {
 	t1.F21 = 21
 	t1.F22 = []string{"f22"}
 
-	m, err := StructToStringMap(&t1)
+	m, err := structmapper.StructToStringMap(&t1)
 
 	expected := map[string]string{
 		"f11": "11",
@@ -362,7 +364,7 @@ func Test_AnonymousFields(t *testing.T) {
 	}
 
 	t2 := T1{}
-	err = StringMapToStruct(m, &t2, true)
+	err = structmapper.StringMapToStruct(m, &t2, true)
 
 	if err != nil {
 		t.Errorf("StringMapToStruct - unexpected error: %v", err)

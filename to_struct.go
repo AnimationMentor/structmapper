@@ -2,11 +2,10 @@ package structmapper
 
 import (
 	"encoding/json"
+	"fmt"
 	"reflect"
 	"time"
 	// "unicode"
-
-	"github.com/pkg/errors"
 )
 
 // StringMapToStruct is the inverse of StructToStringMap.
@@ -15,14 +14,13 @@ import (
 // - string slices are invented by splitting the string on commas
 //
 // Note: bool conversion is non-strict in all cases.
-//
 func StringMapToStruct(m map[string]string, s interface{}, strict bool) error {
 
 	if reflect.TypeOf(s).Kind() != reflect.Ptr || reflect.Indirect(reflect.ValueOf(s)).Kind() != reflect.Struct {
-		return errors.Errorf("s must be a pointer to a struct")
+		return fmt.Errorf("s must be a pointer to a struct")
 	}
 	if m == nil {
-		return errors.Errorf("m must not be nil")
+		return fmt.Errorf("m must not be nil")
 	}
 
 	// m2 is an intermediate form of the data with each value being a string
@@ -70,12 +68,12 @@ func StringMapToStruct(m map[string]string, s interface{}, strict bool) error {
 					if value != "" {
 						tval, err := time.Parse(time.RFC3339, value)
 						if err != nil {
-							return errors.Wrap(err, "parsing time value")
+							return fmt.Errorf("parsing time value: %w", err)
 						}
 						m2[t] = tval
 					}
 				} else if f.Type.Kind() == reflect.Bool {
-					m2[t] = stringToBool(value)
+					m2[t] = StringToBool(value)
 				} else if value != "" {
 					var decodedValue interface{}
 					err := json.Unmarshal([]byte(value), &decodedValue)

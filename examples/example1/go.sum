@@ -1,0 +1,4 @@
+github.com/AnimationMentor/structmapper v0.0.0-20191110211849-11093c66b124 h1:hYqVoAdRMpjIB9fxASWwLGsTUhT2f98RLo+q3DmBXUM=
+github.com/AnimationMentor/structmapper v0.0.0-20191110211849-11093c66b124/go.mod h1:9NrF1TbLNtQ4mT0Psq2J+kE1iDAdDO25evLII3oEgKU=
+github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
+github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=

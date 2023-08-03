@@ -2,10 +2,9 @@ package structmapper
 
 import (
 	"encoding/json"
+	"fmt"
 	"reflect"
 	"time"
-
-	"github.com/pkg/errors"
 )
 
 // StructToStringMap converts a struct to a map[string]string by creating entries in the map
@@ -15,7 +14,7 @@ import (
 func StructToStringMap(s interface{}) (map[string]string, error) {
 
 	if reflect.TypeOf(s).Kind() != reflect.Ptr || reflect.Indirect(reflect.ValueOf(s)).Kind() != reflect.Struct {
-		return nil, errors.Errorf("s must be a pointer to a struct")
+		return nil, fmt.Errorf("s must be a pointer to a struct")
 	}
 	m := make(map[string]string, 20)
 
