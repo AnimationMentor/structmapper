@@ -6,16 +6,16 @@ import (
 	"strings"
 )
 
-// getJSONTag takes a field name and json struct tag value and returns the effective name, omitempty setting
+// GetJSONTag takes a field name and json struct tag value and returns the effective name, omitempty setting
 // and an indicator if the field value should be ommitted (if the tag value is "-").
 //
-//    name, omitEmpty, omit := getJSONTag(fieldName, fieldTag)
+//	name, omitEmpty, omit := GetJSONTag(fieldName, fieldTag)
 //
 // Examples:
-//    getJSONTag("Cake", "tuna,omitempty") -> "tuna",true
-//    getJSONTag("Cake", "") -> "Cake",false
 //
-func getJSONTag(fieldName, tag string) (string, bool, bool) {
+//	GetJSONTag("Cake", "tuna,omitempty") -> "tuna",true
+//	GetJSONTag("Cake", "") -> "Cake",false
+func GetJSONTag(fieldName, tag string) (string, bool, bool) {
 	if tag == "-" {
 		return "", false, true
 	}
@@ -37,13 +37,13 @@ func getJSONTagFromField(f reflect.StructField) (string, bool, bool) {
 	if t == "" {
 		t = f.Tag.Get("json")
 	}
-	return getJSONTag(f.Name, t)
+	return GetJSONTag(f.Name, t)
 }
 
-// stringToBool returns true if the value is true looking
+// StringToBool returns true if the value is true looking
 // if numeric and greater than zero
 // if string and starts with t or y
-func stringToBool(s string) bool {
+func StringToBool(s string) bool {
 	// optimise for normal json case
 	if s == "true" {
 		return true

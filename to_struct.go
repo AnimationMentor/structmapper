@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"reflect"
 	"time"
+
 	// "unicode"
 
 	"github.com/pkg/errors"
@@ -15,7 +16,6 @@ import (
 // - string slices are invented by splitting the string on commas
 //
 // Note: bool conversion is non-strict in all cases.
-//
 func StringMapToStruct(m map[string]string, s interface{}, strict bool) error {
 
 	if reflect.TypeOf(s).Kind() != reflect.Ptr || reflect.Indirect(reflect.ValueOf(s)).Kind() != reflect.Struct {
@@ -75,7 +75,7 @@ func StringMapToStruct(m map[string]string, s interface{}, strict bool) error {
 						m2[t] = tval
 					}
 				} else if f.Type.Kind() == reflect.Bool {
-					m2[t] = stringToBool(value)
+					m2[t] = StringToBool(value)
 				} else if value != "" {
 					var decodedValue interface{}
 					err := json.Unmarshal([]byte(value), &decodedValue)
