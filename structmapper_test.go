@@ -8,7 +8,7 @@ import (
 
 var _ = Describe("Structmapper", func() {
 	type testStruct2 struct {
-		cake string
+		Cake string
 	}
 	type testStruct struct {
 		Tuna             string   `json:"tuna"`
@@ -43,22 +43,21 @@ var _ = Describe("Structmapper", func() {
 
 		a := "a"
 		Expect(structmapper.StringMapToStruct(m, a, true)).
-			To(MatchError("s must be a pointer to a struct",
+			To(MatchError("second param must be a pointer to a struct",
 				"passing string value to StringMapToStruct should return an error"))
 
 		Expect(structmapper.StringMapToStruct(m, &a, true)).
-			To(MatchError("s must be a pointer to a struct",
+			To(MatchError("second param must be a pointer to a struct",
 				"passing string pointer to StringMapToStruct should return an error"))
 
 		type testing struct{}
 		var b *testing
-		Expect(structmapper.StringMapToStruct(m, b, true)).To(MatchError("s must be a pointer to a struct",
+		Expect(structmapper.StringMapToStruct(m, b, true)).To(MatchError("second param must be a pointer to a struct",
 			"passing nil struct pointer to StringMapToStruct should return an error"))
 
 		b = &testing{}
 		m = nil
-		Expect(structmapper.StringMapToStruct(m, b, true)).To(MatchError("m must not be nil",
-			"m must not be nil"))
+		Expect(structmapper.StringMapToStruct(m, b, true)).To(MatchError("first param must not be nil"))
 	})
 
 	DescribeTable("StructToStringMap",

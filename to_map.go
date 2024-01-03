@@ -50,18 +50,9 @@ func StructToStringMap(s interface{}) (map[string]string, error) {
 				continue
 			}
 
-			var stringValue string
-
-			if timeString, isT := isTime(f); isT {
-				stringValue = timeString
-			} else if f.Kind() == reflect.String {
-				stringValue = f.String()
-			} else {
-				buf, err := json.Marshal(f.Interface())
-				if err != nil {
-					return fmt.Errorf("json encoding: %w", err)
-				}
-				stringValue = string(buf)
+			stringValue, err := convertToString(f)
+			if err != nil {
+				return err
 			}
 
 			if stringValue == "" && omitEmpty {
@@ -74,6 +65,24 @@ func StructToStringMap(s interface{}) (map[string]string, error) {
 	}
 
 	return m, walkValue(reflect.ValueOf(s).Elem())
+}
+
+func convertToString(f reflect.Value) (string, error) {
+	var stringValue string
+
+	if timeString, isT := isTime(f); isT {
+		stringValue = timeString
+	} else if f.Kind() == reflect.String {
+		stringValue = f.String()
+	} else {
+		buf, err := json.Marshal(f.Interface())
+		if err != nil {
+			return "", fmt.Errorf("json encoding: %w", err)
+		}
+		stringValue = string(buf)
+	}
+
+	return stringValue, nil
 }
 
 // isTime returns true and the string value if this is a time.Time or *time.Time
