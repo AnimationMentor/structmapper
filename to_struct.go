@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"reflect"
 	"time"
-	// "unicode"
 )
 
 // StringMapToStruct is the inverse of StructToStringMap.
@@ -105,5 +104,5 @@ func StringMapToStruct(m map[string]string, s interface{}, strict bool) error {
 	}
 
 	// json decode fully into s
-	return json.Unmarshal([]byte(buf), &s)
+	return json.Unmarshal(buf, &s)
 }
