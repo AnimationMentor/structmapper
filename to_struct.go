@@ -104,5 +104,10 @@ func StringMapToStruct(m map[string]string, s interface{}, strict bool) error {
 	}
 
 	// json decode fully into s
-	return json.Unmarshal(buf, &s)
+
+	if err := json.Unmarshal(buf, &s); err != nil {
+		return fmt.Errorf("json decoding: %w", err)
+	}
+
+	return nil
 }
