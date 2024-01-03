@@ -7,7 +7,7 @@ import (
 )
 
 // GetJSONTag takes a field name and json struct tag value and returns the effective name, omitempty setting
-// and an indicator if the field value should be ommitted (if the tag value is "-").
+// and an indicator if the field value should be omitted (if the tag value is "-").
 //
 //	name, omitEmpty, omit := GetJSONTag(fieldName, fieldTag)
 //
@@ -27,6 +27,7 @@ func GetJSONTag(fieldName, tag string) (string, bool, bool) {
 	if len(f) < 1 || f[0] == "" {
 		return fieldName, omitEmpty, false
 	}
+
 	return f[0], omitEmpty, false
 }
 
@@ -37,6 +38,7 @@ func getJSONTagFromField(f reflect.StructField) (string, bool, bool) {
 	if t == "" {
 		t = f.Tag.Get("json")
 	}
+
 	return GetJSONTag(f.Name, t)
 }
 
@@ -59,11 +61,13 @@ func StringToBool(s string) bool {
 		return i > 0
 	}
 	s = strings.ToLower(s)
+
 	return len(s) > 0 && s[0] == 't' || s[0] == 'y'
 }
 
 // stringToStringSlice hopes the input is a comma separated string and returns it as a slice.
 func stringToStringSlice(s string) []string {
 	s = strings.Replace(s, ", ", ",", -1)
+
 	return strings.Split(s, ",")
 }

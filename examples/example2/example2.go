@@ -22,7 +22,6 @@ type example1 struct {
 }
 
 func main() {
-
 	m := map[string]string{
 		"candy": "",
 		// "candy": "99",
@@ -46,5 +45,4 @@ func main() {
 	}
 	fmt.Printf("from    map: %#v\n", m)
 	fmt.Printf("  to struct: %#v\n", s)
-
 }

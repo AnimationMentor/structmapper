@@ -15,7 +15,6 @@ import (
 //
 // Note: bool conversion is non-strict in all cases.
 func StringMapToStruct(m map[string]string, s interface{}, strict bool) error {
-
 	if reflect.TypeOf(s).Kind() != reflect.Ptr || reflect.Indirect(reflect.ValueOf(s)).Kind() != reflect.Struct {
 		return fmt.Errorf("s must be a pointer to a struct")
 	}
@@ -32,7 +31,6 @@ func StringMapToStruct(m map[string]string, s interface{}, strict bool) error {
 	// Iterate over the given struct and collect values into the map.
 	// Anonymous fields cause a recursive call to walkValue().
 	walkValue = func(sv reflect.Value) error {
-
 		st := sv.Type()
 
 		// Iterate over the struct looking for matches in the string map.
@@ -48,6 +46,7 @@ func StringMapToStruct(m map[string]string, s interface{}, strict bool) error {
 				if err := walkValue(sv.Field(i)); err != nil {
 					return err
 				}
+
 				continue
 			}
 
@@ -89,10 +88,10 @@ func StringMapToStruct(m map[string]string, s interface{}, strict bool) error {
 					if err != nil {
 						return err
 					}
-
 				}
 			}
 		}
+
 		return nil
 	}
 	if err := walkValue(reflect.ValueOf(s).Elem()); err != nil {
@@ -102,7 +101,7 @@ func StringMapToStruct(m map[string]string, s interface{}, strict bool) error {
 	// we now json encode m2 to make it a form which looks more like s
 	buf, err := json.Marshal(m2)
 	if err != nil {
-		return err
+		return fmt.Errorf("json encoding: %w", err)
 	}
 
 	// json decode fully into s

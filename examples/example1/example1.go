@@ -15,7 +15,6 @@ type example1 struct {
 }
 
 func main() {
-
 	s := example1{"hello", []string{"hi", "nice"}, 2, 20.5, true}
 
 	m, err := structmapper.StructToStringMap(&s)

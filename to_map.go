@@ -12,7 +12,6 @@ import (
 // encoded.
 // JSON struct tags are consulted for map key names and ommit behaviour.
 func StructToStringMap(s interface{}) (map[string]string, error) {
-
 	if reflect.TypeOf(s).Kind() != reflect.Ptr || reflect.Indirect(reflect.ValueOf(s)).Kind() != reflect.Struct {
 		return nil, fmt.Errorf("s must be a pointer to a struct")
 	}
@@ -37,6 +36,7 @@ func StructToStringMap(s interface{}) (map[string]string, error) {
 				if err := walkValue(f); err != nil {
 					return err
 				}
+
 				continue
 			}
 
@@ -59,7 +59,7 @@ func StructToStringMap(s interface{}) (map[string]string, error) {
 			} else {
 				buf, err := json.Marshal(f.Interface())
 				if err != nil {
-					return err
+					return fmt.Errorf("json encoding: %w", err)
 				}
 				stringValue = string(buf)
 			}
@@ -68,8 +68,8 @@ func StructToStringMap(s interface{}) (map[string]string, error) {
 				continue
 			}
 			m[t] = stringValue
-
 		}
+
 		return nil
 	}
 
@@ -84,6 +84,7 @@ func isTime(f reflect.Value) (string, bool) {
 			if t.IsZero() {
 				return "", true
 			}
+
 			return t.Format(time.RFC3339), true
 		}
 	} else if f.Kind() == reflect.Ptr {
@@ -91,8 +92,10 @@ func isTime(f reflect.Value) (string, bool) {
 			if t == nil {
 				return "", true
 			}
+
 			return t.Format(time.RFC3339), true
 		}
 	}
+
 	return "", false
 }

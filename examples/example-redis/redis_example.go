@@ -26,7 +26,6 @@ type example1 struct {
 }
 
 func main() {
-
 	s := example1{
 		Tuna:       "this is odd",
 		Songs:      []string{"one", "two", "three"},

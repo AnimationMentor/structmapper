@@ -29,7 +29,6 @@ func Test_BadInputsToStructToStringMap(t *testing.T) {
 }
 
 func Test_BadInputsToStringMapToStruct(t *testing.T) {
-
 	m := map[string]string{}
 
 	a := "a"
@@ -77,7 +76,6 @@ type testStruct2 struct {
 }
 
 func Test_StructToStringMap(t *testing.T) {
-
 	type testdata struct {
 		expectedToError bool
 		input           *testStruct
@@ -113,19 +111,17 @@ func Test_StructToStringMap(t *testing.T) {
 			if !v.expectedToError {
 				t.Errorf("test %d: got unexpected error - %v", i, err)
 			}
+
 			continue
 		}
 
 		if !reflect.DeepEqual(m, v.expectedMap) {
 			t.Errorf("test %d: unexpected result - %#v", i, m)
 		}
-
 	}
-
 }
 
 func Test_StringMapToStruct(t *testing.T) {
-
 	type testdata struct {
 		expectedToError bool
 		inputMap        map[string]string
@@ -185,19 +181,17 @@ func Test_StringMapToStruct(t *testing.T) {
 			if !v.expectedToError {
 				t.Errorf("test %d: got unexpected error - %v", i, err)
 			}
+
 			continue
 		}
 
 		if !reflect.DeepEqual(s, v.expectedStruct) {
 			t.Errorf("test %d: unexpected result - %#v", i, s)
 		}
-
 	}
-
 }
 
 func Test_NonStrictStringMapToStruct(t *testing.T) {
-
 	type testdata struct {
 		expectedToError bool
 		inputMap        map[string]string
@@ -250,19 +244,17 @@ func Test_NonStrictStringMapToStruct(t *testing.T) {
 			if !v.expectedToError {
 				t.Errorf("test %d: got unexpected error - %v", i, err)
 			}
+
 			continue
 		}
 
 		if !reflect.DeepEqual(s, v.expectedStruct) {
 			t.Errorf("test %d: got %#v, expected %#v", i, s, v.expectedStruct)
 		}
-
 	}
-
 }
 
 func Test_getJSONTag(t *testing.T) {
-
 	type testdata struct {
 		inName            string
 		inTag             string
@@ -288,13 +280,10 @@ func Test_getJSONTag(t *testing.T) {
 		if gotTag != v.expectedTag || gotOmitEmpty != v.expectedOmitEmpty {
 			t.Errorf("test %d: expected (%q,%t) got (%q,%t)", i, v.expectedTag, v.expectedOmitEmpty, gotTag, gotOmitEmpty)
 		}
-
 	}
-
 }
 
 func Test_stringToBool(t *testing.T) {
-
 	type testdata struct {
 		in       string
 		expected bool
@@ -321,13 +310,10 @@ func Test_stringToBool(t *testing.T) {
 		if got != v.expected {
 			t.Errorf("test %d: expected %t got %t for %q", i, v.expected, got, v.in)
 		}
-
 	}
-
 }
 
 func Test_AnonymousFields(t *testing.T) {
-
 	type T2 struct {
 		F21 int      `json:"f21"`
 		F22 []string `json:"f22"`
@@ -357,9 +343,11 @@ func Test_AnonymousFields(t *testing.T) {
 
 	if err != nil {
 		t.Errorf("StructToStringMap - unexpected error: %v", err)
+
 		return
 	} else if !reflect.DeepEqual(m, expected) {
 		t.Errorf("StructToStringMap - expected %#v got %#v", expected, m)
+
 		return
 	}
 
@@ -368,9 +356,11 @@ func Test_AnonymousFields(t *testing.T) {
 
 	if err != nil {
 		t.Errorf("StringMapToStruct - unexpected error: %v", err)
+
 		return
 	} else if !reflect.DeepEqual(t1, t2) {
 		t.Errorf("StringMapToStruct - expected %#v got %#v", t1, t2)
+
 		return
 	}
 }
