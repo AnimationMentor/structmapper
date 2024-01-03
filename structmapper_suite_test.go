@@ -8,6 +8,7 @@ import (
 )
 
 func TestStructmapper(t *testing.T) {
+	t.Parallel()
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Structmapper Suite")
 }
