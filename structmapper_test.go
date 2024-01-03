@@ -7,7 +7,6 @@ import (
 )
 
 var _ = Describe("Structmapper", func() {
-
 	type testStruct2 struct {
 		cake string
 	}
@@ -26,14 +25,17 @@ var _ = Describe("Structmapper", func() {
 
 	It("handles bad inputs to StructToStringMap", func() {
 		a := "a"
-		Expect(structmapper.StructToStringMap(a)).Error().To(HaveOccurred(), "passing string value to StructToStringMap should return an error")
+		Expect(structmapper.StructToStringMap(a)).Error().To(HaveOccurred(),
+			"passing string value to StructToStringMap should return an error")
 
-		Expect(structmapper.StructToStringMap(&a)).Error().To(HaveOccurred(), "passing string pointer to StructToStringMap should return an error")
+		Expect(structmapper.StructToStringMap(&a)).Error().To(HaveOccurred(),
+			"passing string pointer to StructToStringMap should return an error")
 
 		type testing struct{}
 
 		var b *testing
-		Expect(structmapper.StructToStringMap(b)).Error().To(HaveOccurred(), "passing nil struct pointer to StructToStringMap should return an error")
+		Expect(structmapper.StructToStringMap(b)).Error().To(HaveOccurred(),
+			"passing nil struct pointer to StructToStringMap should return an error")
 	})
 
 	It("handles bad inputs to StringMapToStruct", func() {
@@ -77,17 +79,25 @@ var _ = Describe("Structmapper", func() {
 		Entry(nil,
 			false,
 			&testStruct{"hello", []string{"hi", "nice"}, 2, 20.5, true, "", "", "", "", nil},
-			map[string]string{"tuna": "hello", "songs": "[\"hi\",\"nice\"]", "favnum": "2", "temp": "20.5", "candy": "true", "NoTag": ""},
+			map[string]string{
+				"tuna": "hello", "songs": "[\"hi\",\"nice\"]", "favnum": "2",
+				"temp": "20.5", "candy": "true", "NoTag": "",
+			},
 		),
 		Entry(nil,
 			false,
 			&testStruct{"hello", []string{"hi", "nice"}, 2, 20.5, true, "A", "", "", "", nil},
-			map[string]string{"tuna": "hello", "songs": "[\"hi\",\"nice\"]", "favnum": "2", "temp": "20.5", "candy": "true", "quiet": "A", "NoTag": ""},
+			map[string]string{
+				"tuna": "hello", "songs": "[\"hi\",\"nice\"]", "favnum": "2",
+				"temp": "20.5", "candy": "true", "quiet": "A", "NoTag": "",
+			},
 		),
 		Entry(nil,
 			false,
 			&testStruct{},
-			map[string]string{"tuna": "", "songs": "null", "favnum": "0", "temp": "0", "candy": "false", "NoTag": ""},
+			map[string]string{
+				"tuna": "", "songs": "null", "favnum": "0", "temp": "0", "candy": "false", "NoTag": "",
+			},
 		),
 	)
 
@@ -111,38 +121,52 @@ var _ = Describe("Structmapper", func() {
 		// Note these two are a reverse of the StructToStringMap tests.
 		Entry(nil,
 			false,
-			map[string]string{"tuna": "hello", "songs": "[\"hi\",\"nice\"]", "favnum": "2", "temp": "20.5", "candy": "true", "NoTag": ""},
+			map[string]string{
+				"tuna": "hello", "songs": "[\"hi\",\"nice\"]", "favnum": "2", "temp": "20.5", "candy": "true", "NoTag": "",
+			},
 			&testStruct{"hello", []string{"hi", "nice"}, 2, 20.5, true, "", "", "", "", nil},
 		),
 		Entry(nil,
 			false,
-			map[string]string{"tuna": "", "songs": "null", "favnum": "0", "temp": "0", "candy": "false", "quiet": "A", "NoTag": ""},
+			map[string]string{
+				"tuna": "", "songs": "null", "favnum": "0", "temp": "0", "candy": "false", "quiet": "A", "NoTag": "",
+			},
 			&testStruct{Quiet: "A"},
 		),
 		Entry(nil,
 			false,
-			map[string]string{"tuna": "", "songs": "null", "favnum": "0", "temp": "0", "candy": "false", "NoTag": ""},
+			map[string]string{
+				"tuna": "", "songs": "null", "favnum": "0", "temp": "0", "candy": "false", "NoTag": "",
+			},
 			&testStruct{},
 		),
 		// These test more crazier inputs.
 		Entry(nil,
 			false,
-			map[string]string{"tuna": "hello", "songs": "[]", "favnum": "2", "temp": "20.5", "candy": "true", "NoTag": ""},
+			map[string]string{
+				"tuna": "hello", "songs": "[]", "favnum": "2", "temp": "20.5", "candy": "true", "NoTag": "",
+			},
 			&testStruct{"hello", []string{}, 2, 20.5, true, "", "", "", "", nil},
 		),
 		Entry(nil,
 			false,
-			map[string]string{"tuna": "hello", "songs": "", "favnum": "2", "temp": "20.5", "candy": "true", "NoTag": ""},
+			map[string]string{
+				"tuna": "hello", "songs": "", "favnum": "2", "temp": "20.5", "candy": "true", "NoTag": "",
+			},
 			&testStruct{"hello", nil, 2, 20.5, true, "", "", "", "", nil},
 		),
 		Entry(nil,
 			false,
-			map[string]string{"tuna": "hello", "favnum": "2", "temp": "20.5", "candy": "true", "NoTag": ""},
+			map[string]string{
+				"tuna": "hello", "favnum": "2", "temp": "20.5", "candy": "true", "NoTag": "",
+			},
 			&testStruct{"hello", nil, 2, 20.5, true, "", "", "", "", nil},
 		),
 		Entry(nil,
 			false,
-			map[string]string{"tuna": "", "songs": "null", "favnum": "0", "temp": "0", "candy": "false", "Skip": "cake", "NoTag": ""},
+			map[string]string{
+				"tuna": "", "songs": "null", "favnum": "0", "temp": "0", "candy": "false", "Skip": "cake", "NoTag": "",
+			},
 			&testStruct{},
 		),
 	)
