@@ -7,6 +7,23 @@ import (
 )
 
 var _ = Describe("Structmapper", func() {
+
+	type testStruct2 struct {
+		cake string
+	}
+	type testStruct struct {
+		Tuna             string   `json:"tuna"`
+		Songs            []string `json:"songs"`
+		FavNumber        int      `json:"favnum"`
+		Temperature      float64  `json:"temp"`
+		LikeCandy        bool     `json:"candy"`
+		Quiet            string   `json:"quiet,omitempty"`
+		Skip             string   `json:"-"`
+		NoTag            string
+		unexportedString string
+		unexportedPtr    *testStruct2
+	}
+
 	It("handles bad inputs to StructToStringMap", func() {
 		a := "a"
 		Expect(structmapper.StructToStringMap(a)).Error().To(HaveOccurred(), "passing string value to StructToStringMap should return an error")
@@ -250,19 +267,3 @@ var _ = Describe("Structmapper", func() {
 		Expect(t1).To(Equal(t2))
 	})
 })
-
-type testStruct2 struct {
-	cake string
-}
-type testStruct struct {
-	Tuna             string   `json:"tuna"`
-	Songs            []string `json:"songs"`
-	FavNumber        int      `json:"favnum"`
-	Temperature      float64  `json:"temp"`
-	LikeCandy        bool     `json:"candy"`
-	Quiet            string   `json:"quiet,omitempty"`
-	Skip             string   `json:"-"`
-	NoTag            string
-	unexportedString string
-	unexportedPtr    *testStruct2
-}
