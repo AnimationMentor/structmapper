@@ -79,7 +79,8 @@ func StructToStringMap(s interface{}) (map[string]string, error) {
 // isTime returns true and the string value if this is a time.Time or *time.Time
 // If it's a nil pointer or a zero value time, returns an empty string.
 func isTime(f reflect.Value) (string, bool) {
-	if f.Kind() == reflect.Struct {
+	switch f.Kind() {
+	case reflect.Struct:
 		if t, ok := f.Interface().(time.Time); ok {
 			if t.IsZero() {
 				return "", true
@@ -87,7 +88,7 @@ func isTime(f reflect.Value) (string, bool) {
 
 			return t.Format(time.RFC3339), true
 		}
-	} else if f.Kind() == reflect.Ptr {
+	case reflect.Ptr:
 		if t, ok := f.Interface().(*time.Time); ok {
 			if t == nil {
 				return "", true
