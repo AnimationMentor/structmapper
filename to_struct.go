@@ -13,17 +13,17 @@ import (
 // - string slices are invented by splitting the string on commas
 //
 // Note: bool conversion is non-strict in all cases.
-func StringMapToStruct(m map[string]string, s interface{}, strict bool) error {
-	if reflect.TypeOf(s).Kind() != reflect.Ptr || reflect.Indirect(reflect.ValueOf(s)).Kind() != reflect.Struct {
-		return fmt.Errorf("s must be a pointer to a struct")
+func StringMapToStruct(inputMap map[string]string, str interface{}, strict bool) error {
+	if reflect.TypeOf(str).Kind() != reflect.Ptr || reflect.Indirect(reflect.ValueOf(str)).Kind() != reflect.Struct {
+		return fmt.Errorf("second param must be a pointer to a struct")
 	}
-	if m == nil {
-		return fmt.Errorf("m must not be nil")
+	if inputMap == nil {
+		return fmt.Errorf("first param must not be nil")
 	}
 
-	// m2 is an intermediate form of the data with each value being a string
+	// outputMap is an intermediate form of the data with each value being a string
 	// or a json decoded value
-	m2 := make(map[string]interface{}, len(m))
+	outputMap := make(map[string]interface{}, len(inputMap))
 
 	var walkValue func(reflect.Value) error
 
@@ -34,14 +34,14 @@ func StringMapToStruct(m map[string]string, s interface{}, strict bool) error {
 
 		// Iterate over the struct looking for matches in the string map.
 		for i := 0; i < st.NumField(); i++ {
-			f := st.Field(i)
+			field := st.Field(i)
 			ft := st.Field(i)
 
 			if ft.PkgPath != "" { // unexported
 				continue
 			}
 
-			if f.Anonymous {
+			if field.Anonymous {
 				if err := walkValue(sv.Field(i)); err != nil {
 					return err
 				}
@@ -49,64 +49,92 @@ func StringMapToStruct(m map[string]string, s interface{}, strict bool) error {
 				continue
 			}
 
-			t, _, omit := getJSONTagFromField(f)
+			tag, _, omit := getJSONTagFromField(field)
 			if omit {
 				continue
 			}
-			if value, exists := m[t]; exists {
-
-				// a := f.Type.Kind() == reflect.Struct
-				// b:= sv.Field(i).Interface()
-
-				_, isT := isTime(sv.Field(i))
-
-				if f.Type.Kind() == reflect.String {
-					m2[t] = value
-				} else if isT {
-					if value != "" {
-						tval, err := time.Parse(time.RFC3339, value)
-						if err != nil {
-							return fmt.Errorf("parsing time value: %w", err)
-						}
-						m2[t] = tval
-					}
-				} else if f.Type.Kind() == reflect.Bool {
-					m2[t] = StringToBool(value)
-				} else if value != "" {
-					var decodedValue interface{}
-					err := json.Unmarshal([]byte(value), &decodedValue)
-					if err == nil {
-						m2[t] = decodedValue
-					} else if !strict {
-						if f.Type == reflect.SliceOf(reflect.TypeOf("")) {
-							m2[t] = stringToStringSlice(value)
-							err = nil
-						}
-					}
-
-					if err != nil {
-						return err
-					}
+			if value, exists := inputMap[tag]; exists {
+				if err := convert(outputMap, field, sv.Field(i), tag, value, strict); err != nil {
+					return err
 				}
 			}
 		}
 
 		return nil
 	}
-	if err := walkValue(reflect.ValueOf(s).Elem()); err != nil {
+	if err := walkValue(reflect.ValueOf(str).Elem()); err != nil {
 		return err
 	}
 
-	// we now json encode m2 to make it a form which looks more like s
-	buf, err := json.Marshal(m2)
+	if err := encodeMaps(outputMap, str); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func encodeMaps(outputMap map[string]interface{}, str interface{}) error {
+	// we now json encode outputMap to make it a form which looks more like str
+	buf, err := json.Marshal(outputMap)
 	if err != nil {
 		return fmt.Errorf("json encoding: %w", err)
 	}
+	// json decode fully into str
 
-	// json decode fully into s
-
-	if err := json.Unmarshal(buf, &s); err != nil {
+	if err := json.Unmarshal(buf, &str); err != nil {
 		return fmt.Errorf("json decoding: %w", err)
+	}
+
+	return nil
+}
+
+func convert(
+	outputMap map[string]interface{},
+	field reflect.StructField,
+	fieldValue reflect.Value,
+	tag, value string,
+	strict bool,
+) error {
+	if field.Type.Kind() == reflect.String {
+		outputMap[tag] = value
+
+		return nil
+	}
+
+	if _, isTimeVariable := isTime(fieldValue); isTimeVariable {
+		if value != "" {
+			tval, err := time.Parse(time.RFC3339, value)
+			if err != nil {
+				return fmt.Errorf("parsing time value: %w", err)
+			}
+			outputMap[tag] = tval
+		}
+
+		return nil
+	}
+
+	if field.Type.Kind() == reflect.Bool {
+		outputMap[tag] = StringToBool(value)
+
+		return nil
+	}
+
+	if value == "" {
+		return nil
+	}
+
+	var decodedValue interface{}
+	if err := json.Unmarshal([]byte(value), &decodedValue); err != nil && strict {
+		return fmt.Errorf("json decoding: %w", err)
+	} else if err == nil { // no error, so all good to return
+		outputMap[tag] = decodedValue
+
+		return nil
+	}
+
+	// not in strict mode, so try to find a value worth returning
+	if field.Type == reflect.SliceOf(reflect.TypeOf("")) {
+		outputMap[tag] = stringToStringSlice(value)
 	}
 
 	return nil
