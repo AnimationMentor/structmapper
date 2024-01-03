@@ -39,12 +39,12 @@ linters:
     - ginkgolinter
     - gocheckcompilerdirectives
     # - gochecknoglobals
-    # - gochecknoinits
+    - gochecknoinits
     # - gochecksumtype
     # - gocognit
-    # - goconst
+    - goconst
     # - gocritic
-    # - gocyclo
+    - gocyclo
     # - godot
     - godox
     # - goerr113
@@ -56,7 +56,7 @@ linters:
     # - gomnd
     # - gomoddirectives
     # - gomodguard
-    # - goprintffuncname
+    - goprintffuncname
     - gosec
     - gosimple
     # - gosmopolitan
@@ -76,7 +76,7 @@ linters:
     # - maligned
     # - mirror
     - misspell
-    # - musttag
+    - musttag
     # - nakedret
     - nestif
     - nilerr
@@ -89,7 +89,7 @@ linters:
     # - nosprintfhostport
     - paralleltest
     - perfsprint
-    # - prealloc
+    - prealloc
     - predeclared
     # - promlinter
     # - protogetter
@@ -100,8 +100,8 @@ linters:
     # - sloglint
     # - sqlclosecheck
     - staticcheck
-    # - stylecheck
-    # - tagalign
+    - stylecheck
+    - tagalign
     # - tagliatelle
     - tenv
     # - testableexamples
