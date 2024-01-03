@@ -20,13 +20,13 @@ linters:
     - decorder
     # - depguard
     - dogsled
-    # - dupl
-    # - dupword
-    # - durationcheck
+    - dupl
+    - dupword
+    - durationcheck
     - errcheck
     - errchkjson
     - errname
-    # - errorlint
+    - errorlint
     # - execinquery
     # - exhaustive
     # - exhaustivestruct
@@ -57,7 +57,7 @@ linters:
     # - gomoddirectives
     # - gomodguard
     # - goprintffuncname
-    # - gosec
+    - gosec
     - gosimple
     # - gosmopolitan
     - govet
@@ -84,10 +84,10 @@ linters:
     - nlreturn
     # - noctx
     # - nolintlint
-    # - nonamedreturns
+    - nonamedreturns
     # - nosnakecase
     # - nosprintfhostport
-    # - paralleltest
+    - paralleltest
     - perfsprint
     # - prealloc
     - predeclared
